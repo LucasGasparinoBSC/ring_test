@@ -47,9 +47,7 @@ class RingComms
     public:
         static void Blocking(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
         static void NonBlocking(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
-        static void Put(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
-        static void Get(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
-
+        static void PutGet(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize, MPI_Win& win);
 };
 
 #endif // RINGCOMMS_HPP

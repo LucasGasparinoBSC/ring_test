@@ -85,6 +85,43 @@ void RingComms<ITYPE, VTYPE>::NonBlocking(int& irank, int& nranks, VTYPE*__restr
     if (irank == 0) printf("Total time: %f (ms) | Comms time: %f (ms)\n", timeTotal * 1000.0, timeComms * 1000.0);
 }
 
+// MPI-3 (window on sendBuf)
+template<typename ITYPE, typename VTYPE>
+void RingComms<ITYPE, VTYPE>::PutGet(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize, MPI_Win& win)
+{
+    // Timing vars
+    double timeTotal, timeComms;
+
+    // Time the full execution
+    timeTotal = mpi_utils::timeFunction([&] {
+        // Create and compute next targets
+        int leftRank, rightRank;
+        computeTargets(irank, nranks, leftRank, rightRank);
+
+        // Left->Right: Get from window
+        timeComms = mpi_utils::timeFunction([&] {
+            MPI_Win_fence(0, win);
+            MPI_Get(recvBuf, bufSize, mpi_utils::MPIType<VTYPE>(), leftRank, 0, bufSize, mpi_utils::MPIType<VTYPE>(), win);
+        });
+        
+        // Add irank to recvBuf for verification
+        for (ITYPE i = 0; i < bufSize; i++) {
+            recvBuf[i] += static_cast<VTYPE>(1);
+        }
+        MPI_Win_fence(0, win);
+
+        // Right->Left: Put to window (reverse)
+        timeComms += mpi_utils::timeFunction([&] {
+            //MPI_Win_fence(0, win);
+            MPI_Put(recvBuf, bufSize, mpi_utils::MPIType<VTYPE>(), rightRank, 0, bufSize, mpi_utils::MPIType<VTYPE>(), win);
+            MPI_Win_fence(0, win);
+        });
+    });
+
+    // Print timing results
+    if (irank == 0) printf("Total time: %f (ms) | Comms time: %f (ms)\n", timeTotal * 1000.0, timeComms * 1000.0);
+}
+
 template class RingComms<uint32_t, int>;
 template class RingComms<uint64_t, int>;
 template class RingComms<uint32_t, uint32_t>;
