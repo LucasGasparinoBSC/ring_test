@@ -46,9 +46,9 @@ class RingComms
         static void computeTargets(int &irank, int &nranks, int &leftRank, int &rightRank);
     public:
         static void Blocking(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
-        static void NonBlocking(int& irank, int& nranks, VTYPE* sendBuf, VTYPE* recvBuf, ITYPE& bufSize);
-        static void Put(int& irank, int& nranks, VTYPE* sendBuf, VTYPE* recvBuf, ITYPE& bufSize);
-        static void Get(int& irank, int& nranks, VTYPE* sendBuf, VTYPE* recvBuf, ITYPE& bufSize);
+        static void NonBlocking(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
+        static void Put(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
+        static void Get(int& irank, int& nranks, VTYPE*__restrict sendBuf, VTYPE*__restrict recvBuf, ITYPE& bufSize);
 
 };
 
